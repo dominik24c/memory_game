@@ -25,9 +25,6 @@ SECRET_KEY = 'django-insecure-g#ami4t$*x224z#0=utpb9je)u)saci0fph0f5#eg7l3%4()&g
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,8 +37,12 @@ INSTALLED_APPS = [
 
     'room',
     'game',
-    'cards'
+    'cards',
+    'account'
 ]
+
+# Application definition
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -90,18 +91,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.registration.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.registration.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.registration.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.registration.password_validation.NumericPasswordValidator',
     },
 ]
+
+LOGIN_REDIRECT_URL = 'dashboard'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
