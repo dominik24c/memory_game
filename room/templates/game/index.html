@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h3>Game</h3>
+    <h2>Game</h2>
+    <form method="GET">
+        <input type="hidden" name="game" value="start">
+        <button type="submit" id="btn">Start game!</button>
+    </form>
 {% endblock %}

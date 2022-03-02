@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h4>Game</h4>
+    <div id="game"></div>
+
+    {{ game_room|json_script:"gameRoom" }}
+    <script>
+        const game_socket = new WebSocket(
+            `ws://${window.location.host}/ws/game/${gameRoom}/`
+        );
+
+        game_socket.onmessage = (e)=>{
+            const data = JSON.parse(e.data);
+            console.log(data.message)
+        }
+        game_socket.onclose = (e)=>{
+            console.error("Game socket was closed!")
+        }
+    </script>
+{% endblock %}

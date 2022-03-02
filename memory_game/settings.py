@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'room',
     'game',
     'cards',
-    'account'
+    'account.apps.AccountConfig'
 ]
 
 # Application definition
@@ -89,22 +89,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.registration.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.registration.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.registration.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.registration.password_validation.NumericPasswordValidator',
-    },
-]
-
-LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_REDIRECT_URL = 'game:dashboard'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/

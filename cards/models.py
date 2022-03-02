@@ -7,5 +7,5 @@ from django.db import models
 
 class Card(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100, unique=True)
-    image = models.ImageField(upload_to='cards', height_field='128', width_field='128')
+    name = models.CharField(max_length=100)
+    image = models.ImageField('cards_images', upload_to='cards')

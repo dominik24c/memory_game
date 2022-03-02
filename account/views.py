@@ -15,7 +15,7 @@ def register_view(request: HttpRequest) -> HttpResponse:
             form.save()
             email = form.cleaned_data.get('email')
             messages.success(request, f'Account was created for {email}')
-            return redirect('login')
+            return redirect('auth:login')
     else:
         form = RegistrationForm()
     context['form'] = form

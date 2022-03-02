@@ -22,7 +22,8 @@ class Card:
         return f'{self.name} [{self.position.x}:{self.position.y}]'
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}({self.name!r},{Position.__class__.__name__}({self.position.x!r},{self.position.y!r}),{self.hidden!r})'
+        return f'{self.__class__.__name__}({self.name!r},{Position.__class__.__name__}({self.position.x!r},' \
+               f'{self.position.y!r}))'
 
     def __eq__(self, other) -> bool:
         if isinstance(other, Card):

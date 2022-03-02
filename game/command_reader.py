@@ -1,4 +1,4 @@
-from config import C_SHOW
+from .config import C_SHOW
 from .exceptions import InvalidArgsException
 
 

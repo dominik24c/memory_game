@@ -11,4 +11,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         upload_image_handler(CARDS_IMG_DIR)
-        self.stdout.write('Uploading images')
+        self.stdout.write('Card images was saved!')
