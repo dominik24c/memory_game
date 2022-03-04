@@ -8,6 +8,9 @@ C_SHOW = 'SHOW'  # SHOW X Y
 
 # SERVER COMMANDS
 S_START = 'START'  # <-- start game
+S_HIT = 'HIT'
+S_MISSED = 'MISSED'
+S_POINTS = 'POINTS'  # POINTS num_of_point ex. POINTS 34
 S_END = 'END'  # END POINTS
 S_CARDS = 'CARDS'  # CARDS NAME_1 NAME_2 NAME_3 ...
 S_ERROR = 'ERROR'  # <-- invalid command

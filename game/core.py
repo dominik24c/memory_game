@@ -1,15 +1,14 @@
 import random
 from itertools import product
 
+from cards.models import Card as CardModel
 from .cards import Card, Position, CardMixin
 from .command_reader import CommandReaderMixin
 from .config import C_SHOW, NUM_OF_CARDS, SIZE_OF_BOARD, \
-    NUM_OF_THE_SAME_CARDS, POINTS, S_OK, S_ERROR, S_CARDS
+    NUM_OF_THE_SAME_CARDS, POINTS, S_OK, S_ERROR, S_CARDS, \
+    S_HIT, S_MISSED, S_POINTS
 from .exceptions import GameOver, InvalidCommandException, \
-    GameException
-from cards.models import Card as CardModel
-
-ServerAnswer = S_OK or S_ERROR
+    GameException, PlayerMoveException, PlayerMissed, PlayerHitCards
 
 
 class BoardGeneratorMixin:
@@ -29,14 +28,14 @@ class BoardGeneratorMixin:
         cards_list = []
         for p, c in zip(positions, cards):
             cards_list.append(Card(c, Position(*p)))
-        print(cards_list)
+        # print(cards_list)
         return cards_list
 
     def create_boards(self, cards_list: list[CardModel]) -> list[Card]:
         cards_str = list(map(lambda card: card.name, cards_list))
         cards = self.randomize_cards(cards_str)
         positions = self.generate_positions()
-        return self.generate_boards(cards+cards, positions)
+        return self.generate_boards(cards + cards, positions)
 
 
 class BaseGame(CommandReaderMixin, CardMixin, BoardGeneratorMixin):
@@ -52,7 +51,6 @@ class Game(BaseGame):
 
     def init_hidden_cards(self, cards: list[CardModel]):
         self.hidden_cards = self.create_boards(cards)
-        print(self.hidden_cards)
 
     @property
     def hidden_cards(self) -> list[Card]:
@@ -101,16 +99,27 @@ class Game(BaseGame):
                     self.remove_card(self.hidden_cards, card1)
                     self.remove_card(self.hidden_cards, card2)
                     self.points += POINTS
-                self.clear_unhidden_cards()
-                self.check_the_game_is_over()
+                    self.clear_unhidden_cards()
+                    self.check_the_game_is_over()
+                    raise PlayerHitCards
+                else:
+                    self.clear_unhidden_cards()
+                    raise PlayerMissed
 
             raise Exception("ERROR")
         else:
             raise InvalidCommandException
 
-    def receive_message(self, message: str) -> ServerAnswer:
+    def receive_message(self, message: str) -> str | tuple[str, str] | tuple[str, str, dict]:
         try:
             self.receive_message_handler(message.strip())
+        except GameOver:
+            return S_OK, S_HIT, {S_POINTS: POINTS}
+        except PlayerMoveException as e:
+            if isinstance(e, PlayerHitCards):
+                return S_OK, S_HIT
+            elif isinstance(e, PlayerMissed):
+                return S_OK, S_MISSED
         except GameException:
             self.errors += 1
             return S_ERROR

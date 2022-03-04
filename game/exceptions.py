@@ -2,6 +2,18 @@ class GameException(Exception):
     """Main Game Exception"""
 
 
+class PlayerMoveException(GameException):
+    """Main Player Move Exception"""
+
+
+class PlayerHitCards(PlayerMoveException):
+    """The player hit cards, It has revealed those same cards."""
+
+
+class PlayerMissed(PlayerMoveException):
+    """The player chose two different cards"""
+
+
 class CommandException(GameException):
     """Command Game Exception"""
 

@@ -32,6 +32,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     async def connect(self):
         await self.accept()
+        # initialize and start game
         self.user = await get_user_by_username(self.scope['user'])
         cards = await get_cards()
         self.game.init_hidden_cards(cards)
@@ -46,4 +47,9 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         print(content)
         message = content['message']
         answer = self.game.receive_message(message)
-        await self.send_msg(answer)
+
+        if isinstance(answer, tuple):
+            for a in answer:
+                await self.send_msg(a)
+        else:
+            await self.send_msg(answer)
