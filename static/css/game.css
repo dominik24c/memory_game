@@ -1,0 +1,30 @@
+.card {
+    border: 2px solid red;
+    background-color: yellow;
+    width: 128px;
+    height: 128px;
+    margin: 10px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.card__remove {
+    visibility: hidden;
+    cursor: auto;
+}
+
+.card__visible {
+    visibility: visible;
+}
+
+.card__hidden {
+    visibility: hidden;
+}
+
+.card__disable {
+    pointer-events: none;
+}
+
+#game {
+    background-color: cornflowerblue;
+}

@@ -1,21 +1,20 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/game.css' %}">
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript" src="{% static 'js/game.js' %}" defer></script>
+{% endblock %}
 
 {% block content %}
     <h4>Game</h4>
-    <div id="game"></div>
+    <div id="game">
 
-    {{ game_room|json_script:"gameRoom" }}
-    <script>
-        const game_socket = new WebSocket(
-            `ws://${window.location.host}/ws/game/${gameRoom}/`
-        );
-
-        game_socket.onmessage = (e)=>{
-            const data = JSON.parse(e.data);
-            console.log(data.message)
-        }
-        game_socket.onclose = (e)=>{
-            console.error("Game socket was closed!")
-        }
-    </script>
+    </div>
+    <input id="gameRoom" type="hidden" value="{{ game_room }}">
+    {#    {{ game_room|json_script:"gameRoom" }}#}
 {% endblock %}
