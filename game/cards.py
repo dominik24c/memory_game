@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .exceptions import CardDoesNotExist, GameException
 
 
-@dataclass
+@dataclass(frozen=True)
 class Position:
     __slots__ = ['x', 'y']
 
@@ -11,7 +11,7 @@ class Position:
     y: int
 
 
-@dataclass
+@dataclass(frozen=True)
 class Card:
     __slots__ = ['name', 'position']
 
@@ -27,9 +27,9 @@ class Card:
 
     def __eq__(self, other) -> bool:
         if isinstance(other, Card):
-            return self.name == other.name and self.position.x == other.position.x \
-                   and self.position.y == other.position.y
-        if type(other) == tuple[int, int]:
+            return self.name == other.name and \
+                   not (self.position.x == other.position.x and self.position.y == other.position.y)
+        if isinstance(other, tuple) and list(map(type, other)) == [int, int]:
             return self.position.x == other[0] and self.position.y == other[1]
         raise GameException(f'Incorrect object was passed! It must be instance of {self.__class__.__name__}')
 

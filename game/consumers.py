@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.contrib.auth.models import User
 
 from cards.models import Card
-from game.config import S_START
+from game.config import S_START, S_END
 from game.core import Game
 from room.models import GameRoom
 
@@ -41,15 +41,18 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, code):
         # """Remove game room"""
+        print('Disconnect')
         await delete_room_game_by_user(self.user)
 
     async def receive_json(self, content, **kwargs):
-        print(content)
+        # print(content)
         message = content['message']
         answer = self.game.receive_message(message)
-
+        # print(answer)
         if isinstance(answer, tuple):
             for a in answer:
                 await self.send_msg(a)
+                if a == S_END:
+                    await self.close()
         else:
             await self.send_msg(answer)

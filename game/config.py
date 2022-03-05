@@ -17,4 +17,5 @@ S_ERROR = 'ERROR'  # <-- invalid command
 S_OK = 'OK'
 
 # POINTS
-POINTS = 10
+POINTS = 100
+PENALTY_POINTS = 5

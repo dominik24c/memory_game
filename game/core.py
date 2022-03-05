@@ -5,8 +5,8 @@ from cards.models import Card as CardModel
 from .cards import Card, Position, CardMixin
 from .command_reader import CommandReaderMixin
 from .config import C_SHOW, NUM_OF_CARDS, SIZE_OF_BOARD, \
-    NUM_OF_THE_SAME_CARDS, POINTS, S_OK, S_ERROR, S_CARDS, \
-    S_HIT, S_MISSED, S_POINTS
+    NUM_OF_THE_SAME_CARDS, S_OK, S_ERROR, S_CARDS, \
+    S_HIT, S_MISSED, S_POINTS, S_END, POINTS, PENALTY_POINTS
 from .exceptions import GameOver, InvalidCommandException, \
     GameException, PlayerMoveException, PlayerMissed, PlayerHitCards
 
@@ -46,7 +46,7 @@ class Game(BaseGame):
     def __init__(self):
         self.__hidden_cards: list[Card] = []
         self.__unhidden_cards: list[Card] = []
-        self.points = 0
+        self.total_points = POINTS
         self.errors = 0
 
     def init_hidden_cards(self, cards: list[CardModel]):
@@ -98,30 +98,31 @@ class Game(BaseGame):
                 if card1 == card2:
                     self.remove_card(self.hidden_cards, card1)
                     self.remove_card(self.hidden_cards, card2)
-                    self.points += POINTS
                     self.clear_unhidden_cards()
                     self.check_the_game_is_over()
                     raise PlayerHitCards
                 else:
+                    self.total_points -= PENALTY_POINTS
                     self.clear_unhidden_cards()
                     raise PlayerMissed
-
-            raise Exception("ERROR")
+            else:
+                raise Exception("ERROR")
         else:
             raise InvalidCommandException
 
-    def receive_message(self, message: str) -> str | tuple[str, str] | tuple[str, str, dict]:
+    def receive_message(self, message: str) -> str | tuple[str, str] | tuple[str, str, dict, str]:
         try:
             self.receive_message_handler(message.strip())
         except GameOver:
-            return S_OK, S_HIT, {S_POINTS: POINTS}
+            return S_OK, S_HIT, {S_POINTS: self.total_points}, S_END
         except PlayerMoveException as e:
             if isinstance(e, PlayerHitCards):
                 return S_OK, S_HIT
             elif isinstance(e, PlayerMissed):
                 return S_OK, S_MISSED
-        except GameException:
+        except GameException as e:
             self.errors += 1
+            print(e)
             return S_ERROR
         except Exception as e:
             print(e)
