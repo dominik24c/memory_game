@@ -11,7 +11,11 @@ class PlayerHitCards(PlayerMoveException):
 
 
 class PlayerMissed(PlayerMoveException):
-    """The player chose two different cards"""
+    """The player chose two different cards."""
+
+
+class RevealFirstCard(PlayerMoveException):
+    """The player reveal first card."""
 
 
 class CommandException(GameException):

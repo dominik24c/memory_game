@@ -1,4 +1,11 @@
 const CMD_SHOW = 'SHOW';
+const PATH_TO_IMG_DIR = `http://${window.location.host}/media/cards/`;
+
+const setImgPathAndName = (cardDiv, name, path) => {
+    const imgElement = cardDiv.querySelector('img');
+    imgElement.setAttribute('src', path);
+    imgElement.setAttribute('alt', name);
+}
 
 class Game {
     constructor() {
@@ -25,8 +32,8 @@ class Game {
         this.board.unhidden_cards.push(card);
     }
 
-
     resetUnhiddenCardsArray() {
+        this.board.unsetUnhiddenCards();
         this.board.unhidden_cards.forEach(card => {
             card.hide();
             card.cardDiv.classList.remove('card__disable');
@@ -50,31 +57,44 @@ class Board {
         this.unhidden_cards = [];
     }
 
+    setLastUnhiddenCard(cardName) {
+        const index = this.unhidden_cards.length - 1;
+        if (index === -1) {
+            return null;
+        }
+        const card = this.unhidden_cards[index];
+        card.setCard(cardName)
+        return card
+    }
+
+    unsetUnhiddenCards() {
+        this.unhidden_cards.forEach(card => {
+            card.unsetCard()
+        })
+    }
+
     getCard(x, y) {
         return this.cards[x][y];
     }
 
-    generateBoard(cards) {
-        const n = Math.floor(Math.sqrt(cards.length));
-        for (let i = 0; i < n; i++) {
+    generateBoard(h, w) {
+        for (let i = 0; i < h; i++) {
             const vector = [];
-            for (let j = 0; j < n; j++) {
+            for (let j = 0; j < w; j++) {
                 vector.push(null);
             }
             this.cards.push(vector);
         }
     }
 
-    createBoard(cards) {
-        this.generateBoard(cards);
-
-        const pathToImgDir = `http://${window.location.host}/media/cards/`;
-        cards.forEach(card => {
-            const path = `${pathToImgDir}${card['name']}.png`;
-            const position = card['position'];
-            this.cards[position['x']][position['y']] = new Card(path, card['name'], card['position']);
-        });
-        console.log(this.cards);
+    createBoard(size) {
+        const sizes = size.split('x')
+        this.generateBoard(sizes[0], sizes[1]);
+        for (let i = 0; i < this.cards.length; i++) {
+            for (let j = 0; j < this.cards[i].length; j++) {
+                this.cards[i][j] = new Card(new Position(i, j));
+            }
+        }
     }
 
     render() {
@@ -98,11 +118,23 @@ class Position {
 }
 
 class Card {
-    constructor(path, name, position) {
-        this.path = path;
-        this.name = name;
+    constructor(position) {
+        this.path = '';
+        this.name = '';
         this.position = new Position(position['x'], position['y']);
         this.cardDiv = null;
+    }
+
+    setCard(cardName) {
+        this.path = `${PATH_TO_IMG_DIR}${cardName}.png`;
+        this.name = cardName;
+        setImgPathAndName(this.cardDiv, this.name, this.path);
+    }
+
+    unsetCard() {
+        this.path = '';
+        this.name = '';
+        setImgPathAndName(this.cardDiv, this.name, this.path);
     }
 
     setClassOfImg(className) {
@@ -122,8 +154,6 @@ class Card {
         this.cardDiv = document.createElement('div')
         this.cardDiv.className = 'card';
         const imgElement = document.createElement('img');
-        imgElement.src = this.path;
-        imgElement.alt = this.name;
         imgElement.className = 'card__hidden';
         this.cardDiv.appendChild(imgElement);
         this.cardDiv.addEventListener('click', (e) => cardClickHandler(this.position.x, this.position.y));
@@ -144,8 +174,8 @@ game_socket.onmessage = (e) => {
     const data = JSON.parse(e.data);
     console.log(data.message)
     const message = data.message;
-    if (message && message['CARDS']) {
-        game.board.createBoard(message['CARDS']);
+    if (message && message['BOARD']) {
+        game.board.createBoard(message['BOARD']);
         game.board.render();
     } else if (message === 'HIT') {
         console.log(message);
@@ -161,6 +191,11 @@ game_socket.onmessage = (e) => {
         }, 4000);
     } else if (message && message['POINTS']) {
         console.log(message['POINTS'])
+    } else if (message && message['CARD']) {
+        const cardMsg = message['CARD'].split(' ')
+        const cardName = cardMsg[0];
+        game.board.setLastUnhiddenCard(cardName);
+        console.log(cardName);
     } else if (message === 'OK') {
         console.log(message);
     } else if (message === 'ERROR') {

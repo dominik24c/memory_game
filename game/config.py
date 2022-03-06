@@ -12,7 +12,8 @@ S_HIT = 'HIT'
 S_MISSED = 'MISSED'
 S_POINTS = 'POINTS'  # POINTS num_of_point ex. POINTS 34
 S_END = 'END'  # END POINTS
-S_CARDS = 'CARDS'  # CARDS NAME_1 NAME_2 NAME_3 ...
+S_BOARD_SIZE = 'BOARD'
+S_CARD = 'CARD'    # CARD name
 S_ERROR = 'ERROR'  # <-- invalid command
 S_OK = 'OK'
 

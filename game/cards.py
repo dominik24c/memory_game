@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from weakref import WeakKeyDictionary
 
 from .exceptions import CardDoesNotExist, GameException
 
@@ -41,9 +42,3 @@ class CardMixin:
             raise CardDoesNotExist
 
         return cards_tmp[0]
-
-    def remove_card(self, cards: list[Card], card: Card) -> None:
-        try:
-            cards.remove(card)
-        except ValueError:
-            raise CardDoesNotExist("Cannot remove card!")

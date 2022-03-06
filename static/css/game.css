@@ -8,6 +8,13 @@
     cursor: pointer;
 }
 
+.card img{
+    width: 64px;
+    height: 64px;
+    margin:0;
+    padding: 0;
+}
+
 .card__remove {
     visibility: hidden;
     cursor: auto;
