@@ -4,8 +4,10 @@ from django.contrib.auth.models import User
 
 from cards.models import Card
 from game.config import S_START, S_END, SIZE_OF_BOARD, \
-    NUM_OF_THE_SAME_CARDS, S_BOARD_SIZE
+    NUM_OF_THE_SAME_CARDS, S_BOARD_SIZE, S_POINTS, \
+    PENALTY_POINTS_FOR_EXIT
 from game.core import Game
+from room.models import Game as GameModel
 from room.models import GameRoom
 
 
@@ -17,14 +19,26 @@ def get_cards() -> list[Card]:
 
 @database_sync_to_async
 def get_user_by_username(username: str) -> User:
-    return User.objects.get(username=username)
+    return User.objects.filter(username=username) \
+        .select_related('game_room').first()
 
 
 @database_sync_to_async
 def delete_room_game_by_user(user: User) -> None:
-    game_room = GameRoom.objects.filter(player=user).first()
+    game_room = GameRoom.objects.select_related('game').filter(player=user).first()
     if game_room is not None:
+        game = game_room.game
+        if game.points == -1:
+            game.points = PENALTY_POINTS_FOR_EXIT
+            game.save()
         game_room.delete()
+
+
+@database_sync_to_async
+def save_game_points(user: User, points: int) -> None:
+    game = GameModel.objects.filter(game_room=user.game_room).first()
+    game.points = points
+    game.save()
 
 
 class GameConsumer(AsyncJsonWebsocketConsumer):
@@ -56,7 +70,11 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
         if isinstance(answer, tuple):
             for a in answer:
                 await self.send_msg(a)
-                if a == S_END:
+                if isinstance(a, dict):
+                    points = a.get(S_POINTS)
+                    if points is not None:
+                        await save_game_points(self.user, points)
+                elif a == S_END:
                     await self.close()
         else:
             await self.send_msg(answer)

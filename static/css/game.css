@@ -9,10 +9,7 @@
 }
 
 .card img{
-    width: 64px;
-    height: 64px;
-    margin:0;
-    padding: 0;
+    position: absolute;
 }
 
 .card__remove {

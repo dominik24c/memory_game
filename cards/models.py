@@ -9,3 +9,6 @@ class Card(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     image = models.ImageField('cards_images', upload_to='cards')
+
+    def __str__(self):
+        return f'{self.name}'

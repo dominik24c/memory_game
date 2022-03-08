@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'room',
     'game',
     'cards',
+    'home',
     'account.apps.AccountConfig'
 ]
 
@@ -90,7 +91,7 @@ DATABASES = {
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
 LOGIN_REDIRECT_URL = 'game:dashboard'
-
+LOGOUT_REDIRECT_URL = 'home:home'
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 

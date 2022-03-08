@@ -1,11 +1,19 @@
 const CMD_SHOW = 'SHOW';
-const PATH_TO_IMG_DIR = `http://${window.location.host}/media/cards/`;
+const HOST =`http://${window.location.host}`;
+const PATH_TO_IMG_DIR = `${HOST}/media/cards/`;
 
 const setImgPathAndName = (cardDiv, name, path) => {
     const imgElement = cardDiv.querySelector('img');
     imgElement.setAttribute('src', path);
     imgElement.setAttribute('alt', name);
 }
+
+const unsetImgPathAndName= (cardDiv) => {
+    const imgElement = cardDiv.querySelector('img');
+    imgElement.removeAttribute('src');
+    imgElement.removeAttribute('alt');
+}
+
 
 class Game {
     constructor() {
@@ -126,15 +134,11 @@ class Card {
     }
 
     setCard(cardName) {
-        this.path = `${PATH_TO_IMG_DIR}${cardName}.png`;
-        this.name = cardName;
-        setImgPathAndName(this.cardDiv, this.name, this.path);
+        setImgPathAndName(this.cardDiv, cardName, `${PATH_TO_IMG_DIR}${cardName}.png`);
     }
 
     unsetCard() {
-        this.path = '';
-        this.name = '';
-        setImgPathAndName(this.cardDiv, this.name, this.path);
+        unsetImgPathAndName(this.cardDiv);
     }
 
     setClassOfImg(className) {
@@ -204,7 +208,8 @@ game_socket.onmessage = (e) => {
 }
 
 game_socket.onclose = (e) => {
-    console.error("Game socket was closed!");
+    console.error("Game socket was closed!")
+    window.location.replace(`${HOST}/game`);
 }
 
 const cardClickHandler = (x, y) => {

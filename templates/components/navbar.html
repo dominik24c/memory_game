@@ -1,0 +1,24 @@
+<nav>
+    <ul>
+        <li>
+            <a href="{% url 'home:home' %}">home</a>
+        </li>
+
+        {% if user.is_authenticated %}
+            <li>
+                <a href="{% url 'game:dashboard' %}">dashboard</a>
+            </li>
+
+            <li>
+                <a href="{% url 'auth:logout' %}">logout</a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{% url 'auth:login' %}">login</a>
+            </li>
+            <li>
+                <a href="{% url 'auth:signup' %}">register</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
