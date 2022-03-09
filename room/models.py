@@ -17,7 +17,7 @@ class GameManager(models.Manager):
 
 
 class StandingsManager(models.Manager):
-    def get_all_standings(self) -> QuerySet:
+    def find_all(self) -> QuerySet:
         return self.get_queryset() \
             .prefetch_related('player', 'player__game') \
             .annotate(points_per_match=Avg('player__game__points')) \

@@ -1,3 +1,8 @@
+#game {
+    background-color: cornflowerblue;
+    width: 620px;
+}
+
 .card {
     border: 2px solid red;
     background-color: yellow;
@@ -8,7 +13,8 @@
     cursor: pointer;
 }
 
-.card img{
+
+.card img {
     position: absolute;
 }
 
@@ -27,8 +33,4 @@
 
 .card__disable {
     pointer-events: none;
-}
-
-#game {
-    background-color: cornflowerblue;
 }
