@@ -22,6 +22,10 @@ class CommandException(GameException):
     """Command Game Exception"""
 
 
+class InvalidLengthOfCardsAndPositions(GameException):
+    """Throw if length of cards is not equal length of positions."""
+
+
 class InvalidArgsException(CommandException):
     """Throw if user passed invalid arguments for specific command"""
 

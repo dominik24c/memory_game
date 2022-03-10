@@ -19,15 +19,15 @@ class GameManager(models.Manager):
 class StandingsManager(models.Manager):
     def find_all(self) -> QuerySet:
         return self.get_queryset() \
-            .prefetch_related('player', 'player__game') \
-            .annotate(points_per_match=Avg('player__game__points')) \
+            .prefetch_related('player', 'player__games') \
+            .annotate(points_per_match=Avg('player__games__points')) \
             .only('id', 'points', 'player__username') \
             .all()
 
 
 class Game(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    player = models.ForeignKey(User, on_delete=models.CASCADE, related_name='game')
+    player = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games')
     points = models.IntegerField(default=-1)
     started_at = models.DateTimeField(auto_now_add=True)
     ended_at = models.DateTimeField(auto_now=True)

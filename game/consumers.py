@@ -42,7 +42,7 @@ def save_game_points(user: User, points: int) -> None:
 
 
 class GameConsumer(AsyncJsonWebsocketConsumer):
-    game = Game()
+    game: Game
     user: User
 
     async def send_msg(self, content: str | dict) -> None:
@@ -51,6 +51,7 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         await self.accept()
         # initialize and start game
+        self.game = Game()
         self.user = await get_user_by_username(self.scope['user'])
         cards = await get_cards()
         self.game.init_hidden_cards(cards)

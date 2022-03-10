@@ -20,7 +20,7 @@ class Card:
     position: Position
 
     def __str__(self) -> str:
-        return f'{self.name} [{self.position.x}:{self.position.y}]'
+        return f'{self.name} {self.position.x}:{self.position.y}'
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}({self.name!r},{Position.__class__.__name__}({self.position.x!r},' \

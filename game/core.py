@@ -7,9 +7,9 @@ from .command_reader import CommandReaderMixin
 from .config import C_SHOW, SIZE_OF_BOARD, \
     NUM_OF_THE_SAME_CARDS, S_ERROR, S_CARD, \
     S_HIT, S_MISSED, S_POINTS, S_END, POINTS, PENALTY_POINTS
-from .exceptions import GameOver, InvalidCommandException, \
+from .exceptions import InvalidCommandException, \
     GameException, PlayerMoveException, PlayerMissed, \
-    PlayerHitCards, RevealFirstCard
+    PlayerHitCards, RevealFirstCard, InvalidLengthOfCardsAndPositions
 
 
 class BoardGeneratorMixin:
@@ -18,8 +18,10 @@ class BoardGeneratorMixin:
         random.shuffle(positions)
         return positions
 
-    def generate_boards(self, cards: list, positions: list) -> list[Card]:
+    def generate_boards(self, cards: list[str], positions: list) -> list[Card]:
         cards_list = []
+        if len(positions) != len(cards):
+            raise InvalidLengthOfCardsAndPositions("Length of cards and positions are difference!")
         for p, c in zip(positions, cards):
             cards_list.append(Card(c, Position(*p)))
         return cards_list
@@ -41,7 +43,7 @@ class Game(BaseGame):
         self.total_points = POINTS
         self.errors = 0
 
-    def init_hidden_cards(self, cards: list[CardModel]):
+    def init_hidden_cards(self, cards: list[CardModel]) -> None:
         self.hidden_cards = self.create_boards(cards)
 
     @property
@@ -49,7 +51,7 @@ class Game(BaseGame):
         return self.__hidden_cards
 
     @hidden_cards.setter
-    def hidden_cards(self, value: list) -> None:
+    def hidden_cards(self, value: list[Card]) -> None:
         self.__hidden_cards = value
 
     @property
@@ -57,7 +59,7 @@ class Game(BaseGame):
         return self.__unhidden_cards
 
     @unhidden_cards.setter
-    def unhidden_cards(self, value: list) -> None:
+    def unhidden_cards(self, value: list[Card]) -> None:
         self.__unhidden_cards = value
 
     def clear_unhidden_cards(self) -> None:
@@ -101,6 +103,7 @@ class Game(BaseGame):
         try:
             self.receive_message_handler(message.strip())
         except PlayerMoveException as e:
+
             if isinstance(e, PlayerHitCards):
                 card_msg = self.get_second_chosen_card_message()
                 self.remove_cards()
@@ -108,18 +111,20 @@ class Game(BaseGame):
                 if self.check_the_game_is_over():
                     return card_msg, S_HIT, {S_POINTS: self.total_points}, S_END
                 return card_msg, S_HIT
+
             elif isinstance(e, PlayerMissed):
                 card_msg = self.get_second_chosen_card_message()
                 self.clear_unhidden_cards()
-                self.check_the_game_is_over()
-
                 return card_msg, S_MISSED
+
             elif isinstance(e, RevealFirstCard):
                 return self.get_first_chosen_card_message()
+
         except GameException as e:
             self.errors += 1
-            print(e)
+            # print(e)
             return S_ERROR
+
         except Exception as e:
-            print(e)
+            # print(e)
             return S_ERROR

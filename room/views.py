@@ -1,9 +1,10 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import QuerySet
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseNotFound
-from django.shortcuts import render, redirect
+from django.http.response import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import GameRoom, Standings, Game
 
@@ -32,7 +33,7 @@ def game_dashboard_view(request: HttpRequest) -> HttpResponse:
     context = {}
     data, type_of_data = get_games_or_standings_data(search, user)
 
-    paginator = Paginator(data, 2)
+    paginator = Paginator(data, settings.PAGE_SIZE)
     page_number = request.GET.get('page')
     data_list = paginator.get_page(page_number)
 
@@ -43,10 +44,17 @@ def game_dashboard_view(request: HttpRequest) -> HttpResponse:
 
 @login_required
 def game_view(request: HttpRequest, game_room) -> HttpResponse:
-    game_room_obj = GameRoom.objects.filter(id=game_room).first()
-    if game_room_obj is not None:
-        return render(request, 'game/game.html', {
-            'game_room': game_room
-        })
-    else:
-        return HttpResponseNotFound()
+    game_room = get_object_or_404(GameRoom, id=game_room)
+    if game_room.player.id != request.user.id:
+        return HttpResponse("It's not your game room!", 403)
+    return render(request, 'game/game.html', {
+        'game_room': game_room
+    })
+
+# game_room_obj = GameRoom.objects.filter(id=game_room).first()
+# if game_room_obj is not None:
+#     return render(request, 'game/game.html', {
+#         'game_room': game_room
+#     })
+# else:
+#     return HttpResponseNotFound()
