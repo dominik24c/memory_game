@@ -124,7 +124,7 @@ class GameTest(TestCase):
         self.assertEqual(self.game.total_points, POINTS - PENALTY_POINTS)
         self.assertEqual(len(self.game.unhidden_cards), 0)
 
-    def test_d(self) -> None:
+    def test_receive_message_end_game(self) -> None:
         self.game.hidden_cards = [
             Card('banana', Position(0, 0)),
             Card('banana', Position(0, 1))

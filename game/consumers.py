@@ -42,7 +42,7 @@ def save_game_points(user: User, points: int) -> None:
 
 
 class GameConsumer(AsyncJsonWebsocketConsumer):
-    game: Game
+    game: Game = None
     user: User
 
     async def send_msg(self, content: str | dict) -> None:
@@ -60,14 +60,14 @@ class GameConsumer(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, code):
         # """Remove game room"""
-        print('Disconnect')
+        # print('Disconnect')
         await delete_room_game_by_user(self.user)
 
     async def receive_json(self, content, **kwargs):
-        print(f'Content {content}')
+        # print(f'Content {content}')
         message = content['message']
         answer = self.game.receive_message(message)
-        print(f'Answer {answer}')
+        # print(f'Answer {answer}')
         if isinstance(answer, tuple):
             for a in answer:
                 await self.send_msg(a)
